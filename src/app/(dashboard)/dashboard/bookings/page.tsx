@@ -12,7 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
-import { Pencil, Plus, Trash } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
+import CreateBookingModal from "./_components/CreateBookingModal";
 
 const mockBookings = [
   {
@@ -40,10 +41,7 @@ export default function BookingDashboardPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
           <h1 className="text-2xl font-bold">Bookings</h1>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Booking
-          </Button>
+          <CreateBookingModal></CreateBookingModal>
         </div>
         <div className="rounded-lg border overflow-x-auto">
           <Table>
