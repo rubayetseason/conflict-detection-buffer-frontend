@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
-import { Pencil, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import CreateBookingModal from "./_components/CreateBookingModal";
 import Filters from "./_components/Filters";
 
@@ -77,9 +77,6 @@ export default function BookingDashboardPage() {
                     <Badge variant="outline">{booking.status}</Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
-                    <Button size="icon" variant="ghost">
-                      <Pencil className="w-4 h-4" />
-                    </Button>
                     <Button size="icon" variant="ghost">
                       <Trash className="w-4 h-4 text-red-500" />
                     </Button>

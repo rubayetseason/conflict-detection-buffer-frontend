@@ -24,6 +24,18 @@ export default function Home() {
             </h1>
 
             <LoginForm />
+            <div className="grid grid-cols-2 gap-3">
+              <h1 className="text-sm font-semibold text-center">
+                user1@test.com
+                <br />
+                123456
+              </h1>
+              <h1 className="text-sm font-semibold text-center">
+                user2@test.com
+                <br />
+                123456
+              </h1>
+            </div>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "../globals.css";
 import { ThemeProvider } from "@/lib/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -27,6 +28,7 @@ export default function AuthLayout({
         enableSystem
         disableTransitionOnChange
       >
+         <Toaster position="top-center" richColors closeButton />
         <body className={`${poppins.variable} antialiased`}>{children}</body>
       </ThemeProvider>
     </html>

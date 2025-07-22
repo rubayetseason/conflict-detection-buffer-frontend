@@ -5,15 +5,28 @@ import { Sidebar } from "@/components/dashboard/sidebar";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function AdminPanelLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const pathName = usePathname();
+
+  useEffect(() => {
+    const token = localStorage.getItem("conflict_token");
+    if (!token) {
+      router.push("/");
+    }
+  }, [router, pathName]);
+
   const sidebar = useStore(useSidebar, (x) => x);
   if (!sidebar) return null;
   const { getOpenState, settings } = sidebar;
+
   return (
     <>
       <Sidebar />

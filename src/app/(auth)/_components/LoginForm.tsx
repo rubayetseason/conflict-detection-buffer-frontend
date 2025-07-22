@@ -8,12 +8,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { LoginFormData, loginSchema } from "@/schemas/authSchema";
+import axiosInstance from "@/utils/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { Eye, EyeOff, Key, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   const loginForm = useForm({
@@ -21,8 +26,30 @@ export default function LoginForm() {
     defaultValues: { email: "", password: "" },
   });
 
-  function handleLoginSubmit(data: LoginFormData) {
+  async function handleLoginSubmit(data: LoginFormData) {
     console.log("Login submitted:", data);
+
+    try {
+      const res = await axiosInstance.post("/auth/login", {
+        email: data.email,
+        password: data.password,
+      });
+
+      if (res?.data?.success) {
+        const { accessToken, refreshToken } = res.data.data;
+
+        // Store tokens
+        localStorage.setItem("conflict_token", accessToken);
+        localStorage.setItem("conflict_token", refreshToken);
+
+        toast.success("Login successful!");
+        router.push("/dashboard/bookings");
+      }
+    } catch (error) {
+      if (error instanceof AxiosError)
+        return toast.error(error.response?.data.message);
+      toast.error("An error occurred");
+    }
   }
 
   return (
