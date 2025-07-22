@@ -22,6 +22,7 @@ import { DeleteBooking } from "./_components/DeleteBookingModal";
 import Filters from "./_components/Filters";
 import PaginationHandler from "@/helpers/PaginationHandler";
 import { DEFAULT_PAGE_SIZE } from "@/constants";
+import { calculateDuration } from "@/helpers/calculateDuration";
 
 export default function BookingDashboardPage() {
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,7 @@ export default function BookingDashboardPage() {
 
   useEffect(() => {
     getBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch, currentPage]);
 
   return (
@@ -101,13 +103,10 @@ export default function BookingDashboardPage() {
                         {format(new Date(booking.endTime), "p")}
                       </TableCell>
                       <TableCell>
-                        {/* Duration in minutes */}
-                        {Math.round(
-                          (new Date(booking.endTime).getTime() -
-                            new Date(booking.startTime).getTime()) /
-                            60000
-                        )}{" "}
-                        min
+                        {calculateDuration(
+                          new Date(booking.startTime),
+                          new Date(booking.endTime)
+                        )}
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">pending</Badge>
