@@ -1,4 +1,4 @@
-import { LayoutGrid, LucideIcon } from "lucide-react";
+import { Calendar, LayoutGrid, LucideIcon } from "lucide-react";
 
 type Submenu = {
   href: string;
@@ -29,6 +29,12 @@ export function getMenuList(pathname: string): Group[] {
           href: "/dashboard/bookings",
           label: "Dashboard",
           icon: LayoutGrid,
+          submenus: [],
+        },
+        {
+          href: "/dashboard/weekly-view",
+          label: "Weekly View",
+          icon: Calendar,
           submenus: [],
         },
       ],
