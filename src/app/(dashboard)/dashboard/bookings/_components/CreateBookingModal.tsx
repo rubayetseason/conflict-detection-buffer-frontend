@@ -1,6 +1,6 @@
 "use client";
 
-import { TimePicker12Demo } from "@/components/shared/time-picker-12h-demo";
+import { TimePicker12Demo } from "@/components/ui/time-picker-12h-demo";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {

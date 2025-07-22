@@ -1,4 +1,5 @@
-import { IBookingType } from "@/app/types";
+import React from "react";
+import { IBookingType } from "@/types";
 import { resourceColors } from "@/constants";
 import { cn } from "@/lib/utils";
 import { addHours, format, startOfDay } from "date-fns";
@@ -8,12 +9,12 @@ const WeeklyCalendar = ({
   loading,
   hours,
   weekDates,
-  bookings
+  bookings,
 }: {
   loading: boolean;
   hours: string[];
   weekDates: Date[];
-  weekDates: IBookingType[];
+  bookings: IBookingType[];
 }) => {
   return (
     <div>
@@ -38,7 +39,7 @@ const WeeklyCalendar = ({
 
           {/* Grid Rows */}
           {hours.map((hourLabel, hourIdx) => (
-            <>
+            <React.Fragment key={hourIdx}>
               {/* Time label */}
               <div
                 key={`time-${hourIdx}`}
@@ -96,7 +97,7 @@ const WeeklyCalendar = ({
                   </div>
                 );
               })}
-            </>
+            </React.Fragment>
           ))}
         </div>
       )}

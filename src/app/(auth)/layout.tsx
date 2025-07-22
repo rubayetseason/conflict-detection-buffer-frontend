@@ -1,4 +1,4 @@
-import AuthClientLayout from "@/components/dashboard/auth-layout";
+import AuthClientLayout from "@/layouts/auth-layout";
 import { ThemeProvider } from "@/lib/theme-provider";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";

@@ -1,6 +1,6 @@
 "use client";
 
-import { IBookingType } from "@/app/types";
+import { IBookingType } from "@/types";
 import { ContentLayout } from "@/components/dashboard/content-layout";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
