@@ -12,21 +12,20 @@ import {
 import axiosInstance from "@/utils/axios";
 import { AxiosError } from "axios";
 import { Trash } from "lucide-react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 
 export function DeleteBooking({
   bookingId,
   setRefetch,
-  setLoading,
 }: {
   bookingId: string;
   setRefetch: Dispatch<SetStateAction<boolean>>;
-  setLoading: Dispatch<SetStateAction<boolean>>;
 }) {
+  const [open, setOpen] = useState(false);
+
   const deleteBookings = async () => {
     try {
-      setLoading(true);
       const res = await axiosInstance.delete(`/bookings/${bookingId}`);
       if (res?.data?.success) {
         setRefetch((prev) => !prev);
@@ -36,12 +35,12 @@ export function DeleteBooking({
         return toast.error(error.response?.data.message);
       toast.error("An error occurred");
     } finally {
-      setLoading(false);
+      setOpen(false);
     }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <form>
         <DialogTrigger asChild>
           <Button size="icon" variant="ghost">

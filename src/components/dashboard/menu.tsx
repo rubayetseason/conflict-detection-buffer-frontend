@@ -14,6 +14,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { getMenuList } from "@/lib/menu-list";
+import { JWT_TOKEN_PASS } from "@/constants";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -25,7 +26,7 @@ export function Menu({ isOpen }: MenuProps) {
   const router = useRouter();
 
   const logout = () => {
-    localStorage.removeItem("conflict_token");
+    localStorage.removeItem(JWT_TOKEN_PASS);
     window.location.href = "/";
     router.refresh();
   };

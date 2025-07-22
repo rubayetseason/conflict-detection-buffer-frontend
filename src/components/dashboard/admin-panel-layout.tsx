@@ -2,6 +2,7 @@
 
 import { Footer } from "@/components/dashboard/footer";
 import { Sidebar } from "@/components/dashboard/sidebar";
+import { JWT_TOKEN_PASS } from "@/constants";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { useStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ export default function AdminPanelLayout({
   const pathName = usePathname();
 
   useEffect(() => {
-    const token = localStorage.getItem("conflict_token");
+    const token = localStorage.getItem(JWT_TOKEN_PASS);
     if (!token) {
       router.push("/");
     }

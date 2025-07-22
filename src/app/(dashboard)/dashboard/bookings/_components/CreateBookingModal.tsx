@@ -1,5 +1,8 @@
 "use client";
 
+import { TimePicker12Demo } from "@/components/shared/time-picker-12h-demo";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -11,70 +14,43 @@ import {
 } from "@/components/ui/dialog";
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
-  PopoverTrigger,
   PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
-import { CalendarIcon, Plus } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { JWT_TOKEN_PASS } from "@/constants";
 import { cn } from "@/lib/utils";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { BookingFormSchema, bookingSchema } from "@/schemas/bookingSchema";
+import axiosInstance from "@/utils/axios";
+import { jwtDecode } from "@/utils/jwtDecode";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { format } from "date-fns";
-import { useState } from "react";
-import { TimePicker12Demo } from "@/components/shared/time-picker-12h-demo";
+import { CalendarIcon, Plus } from "lucide-react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-const bookingSchema = z
-  .object({
-    resource: z.string().min(1, "Resource is required"),
-    requestedBy: z.string().min(1, "Requested by is required"),
-    date: z.date(),
-    from: z.date(),
-    to: z.date(),
-  })
-  .refine(
-    (data) => {
-      const start = new Date(data.date);
-      start.setHours(data.from.getHours(), data.from.getMinutes());
-      const end = new Date(data.date);
-      end.setHours(data.to.getHours(), data.to.getMinutes());
-
-      return end > start;
-    },
-    {
-      message: "End time must be after start time",
-      path: ["to"],
-    }
-  )
-  .refine(
-    (data) => {
-      const start = new Date(data.date);
-      start.setHours(data.from.getHours(), data.from.getMinutes());
-      const end = new Date(data.date);
-      end.setHours(data.to.getHours(), data.to.getMinutes());
-
-      const diffInMinutes = (end.getTime() - start.getTime()) / 1000 / 60;
-      return diffInMinutes >= 15;
-    },
-    {
-      message: "Minimum duration is 15 minutes",
-      path: ["from"],
-    }
-  );
-
-export type BookingFormSchema = z.infer<typeof bookingSchema>;
-
-export default function CreateBookingModal() {
+export default function CreateBookingModal({
+  setRefetch,
+}: {
+  setRefetch: Dispatch<SetStateAction<boolean>>;
+}) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<BookingFormSchema>({
@@ -88,7 +64,10 @@ export default function CreateBookingModal() {
     },
   });
 
-  const onSubmit = (values: BookingFormSchema) => {
+  const token = localStorage.getItem(JWT_TOKEN_PASS);
+  const user = token ? jwtDecode(token) : null;
+
+  const onSubmit = async (values: BookingFormSchema) => {
     const mergeDateAndTime = (date: Date, time: Date): Date => {
       const merged = new Date(date);
       merged.setHours(time.getHours());
@@ -106,9 +85,22 @@ export default function CreateBookingModal() {
       requestedBy: values.requestedBy,
       startTime: startDateTime.toISOString(),
       endTime: endDateTime.toISOString(),
+      userId: user?.id,
     };
 
-    console.log("Booking Created:", payload);
+    try {
+      const res = await axiosInstance.post("/bookings", payload);
+      if (res?.data?.success) {
+        setOpen(false);
+        setRefetch((prev) => !prev);
+        toast.success("Booking created successfully!");
+        form.reset();
+      }
+    } catch (error) {
+      if (error instanceof AxiosError)
+        return toast.error(error.response?.data.message);
+      toast.error("An error occurred");
+    }
   };
 
   return (
@@ -134,9 +126,21 @@ export default function CreateBookingModal() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Resource</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Room A" {...field} />
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a resource" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Resource 1">Resource 1</SelectItem>
+                      <SelectItem value="Resource 2">Resource 2</SelectItem>
+                      <SelectItem value="Resource 3">Resource 3</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

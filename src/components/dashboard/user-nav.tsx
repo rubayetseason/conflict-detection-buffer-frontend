@@ -21,11 +21,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
+import { JWT_TOKEN_PASS } from "@/constants";
 
 export function UserNav() {
   const router = useRouter();
   const logout = () => {
-    localStorage.removeItem("conflict_token");
+    localStorage.removeItem(JWT_TOKEN_PASS);
     window.location.href = "/";
     router.refresh();
   };

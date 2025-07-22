@@ -1,5 +1,6 @@
 "use client";
 
+import { JWT_TOKEN_PASS } from "@/constants";
 import axios from "axios";
 import { toast } from "sonner";
 
@@ -13,7 +14,7 @@ const axiosInstance = axios.create({
 // ✅ Request Interceptor — Attach token
 axiosInstance.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("conflict_token");
+    const token = localStorage.getItem(JWT_TOKEN_PASS);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

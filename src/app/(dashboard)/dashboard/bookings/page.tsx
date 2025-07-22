@@ -62,12 +62,20 @@ export default function BookingDashboardPage() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
           <h1 className="text-2xl font-bold">Bookings</h1>
-          <CreateBookingModal></CreateBookingModal>
+          <CreateBookingModal setRefetch={setRefetch}></CreateBookingModal>
         </div>
 
         <div>
           <Filters></Filters>
         </div>
+
+        <div className="px-4 py-3 text-yellow-700 bg-yellow-100 border border-red-400 rounded">
+          <h1>
+            Same resource you cannot book during conflicting periods. Try
+            booking different available resources at that time.
+          </h1>
+        </div>
+
         {loading ? (
           <div className="py-12 flex justify-center items-center">
             <Loader2 className="size-8 animate-spin" />
@@ -115,7 +123,6 @@ export default function BookingDashboardPage() {
                         <DeleteBooking
                           bookingId={booking.id}
                           setRefetch={setRefetch}
-                          setLoading={setLoading}
                         ></DeleteBooking>
                       </TableCell>
                     </TableRow>

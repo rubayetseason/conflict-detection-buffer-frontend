@@ -1,5 +1,4 @@
 import AdminPanelLayout from "@/components/dashboard/admin-panel-layout";
-import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/lib/theme-provider";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
@@ -29,7 +28,6 @@ export default function DashboardLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <Toaster position="top-center" richColors closeButton />
         <body className={`${poppins.variable} antialiased`}>
           <AdminPanelLayout>{children}</AdminPanelLayout>
         </body>

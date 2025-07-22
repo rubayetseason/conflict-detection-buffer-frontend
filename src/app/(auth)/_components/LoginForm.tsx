@@ -7,6 +7,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { JWT_TOKEN_PASS } from "@/constants";
 import { LoginFormData, loginSchema } from "@/schemas/authSchema";
 import axiosInstance from "@/utils/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,11 +37,10 @@ export default function LoginForm() {
       });
 
       if (res?.data?.success) {
-        const { accessToken, refreshToken } = res.data.data;
+        const { accessToken } = res.data.data;
 
         // Store tokens
-        localStorage.setItem("conflict_token", accessToken);
-        localStorage.setItem("conflict_token", refreshToken);
+        localStorage.setItem(JWT_TOKEN_PASS, accessToken);
 
         toast.success("Login successful!");
         router.push("/dashboard/bookings");
