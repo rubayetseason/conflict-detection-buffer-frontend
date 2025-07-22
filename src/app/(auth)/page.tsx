@@ -1,7 +1,32 @@
-export default function Auth() {
+import LoginForm from "./_components/LoginForm";
+import BaseLoader from "@/components/loaders/BaseLoader";
+import { ModeToggleButton } from "@/components/shared/ModeToggleButton";
+
+export default function Home() {
   return (
     <div>
-      <h1>This is auth page</h1>
+      <BaseLoader></BaseLoader>
+      <div className="w-full h-screen font-poppins flex flex-col md:flex-row justify-center items-center">
+        {/* left logo */}
+        <div className="hidden md:block w-full md:w-1/2 h-full bg-black dark:bg-white"></div>
+
+        {/* right panel */}
+        <div className="relative px-5 md:px-0 w-full md:w-1/2 h-full">
+          <div className="absolute top-10 right-10">
+            <ModeToggleButton />
+          </div>
+          <div
+            key="login"
+            className="h-full md:w-[60%] mx-auto flex flex-col justify-center items-center space-y-6"
+          >
+            <h1 className="text-2xl md:text-5xl font-semibold text-center">
+              Conflict Detection Login
+            </h1>
+
+            <LoginForm />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

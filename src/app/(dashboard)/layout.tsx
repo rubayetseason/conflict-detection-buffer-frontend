@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "../globals.css";
+import { ThemeProvider } from "@/lib/theme-provider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -19,8 +20,15 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${poppins.variable} antialiased`}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <body className={`${poppins.variable} antialiased`}>{children}</body>
+      </ThemeProvider>
     </html>
   );
 }
