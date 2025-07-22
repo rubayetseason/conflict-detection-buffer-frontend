@@ -1,7 +1,8 @@
+import AuthClientLayout from "@/components/dashboard/auth-layout";
+import { ThemeProvider } from "@/lib/theme-provider";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "../globals.css";
-import { ThemeProvider } from "@/lib/theme-provider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -27,7 +28,9 @@ export default function AuthLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <body className={`${poppins.variable} antialiased`}>{children}</body>
+        <body className={`${poppins.variable} antialiased`}>
+          <AuthClientLayout>{children}</AuthClientLayout>
+        </body>
       </ThemeProvider>
     </html>
   );
