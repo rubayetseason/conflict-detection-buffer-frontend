@@ -28,9 +28,9 @@ export default function DashboardLayout({
         enableSystem
         disableTransitionOnChange
       >
-        <AdminPanelLayout>
-          <body className={`${poppins.variable} antialiased`}>{children}</body>
-        </AdminPanelLayout>
+        <body className={`${poppins.variable} antialiased`}>
+          <AdminPanelLayout>{children}</AdminPanelLayout>
+        </body>
       </ThemeProvider>
     </html>
   );
