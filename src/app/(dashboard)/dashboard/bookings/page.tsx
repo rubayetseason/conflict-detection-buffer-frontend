@@ -14,6 +14,7 @@ import {
 import { format } from "date-fns";
 import { Pencil, Trash } from "lucide-react";
 import CreateBookingModal from "./_components/CreateBookingModal";
+import Filters from "./_components/Filters";
 
 const mockBookings = [
   {
@@ -42,6 +43,10 @@ export default function BookingDashboardPage() {
         <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
           <h1 className="text-2xl font-bold">Bookings</h1>
           <CreateBookingModal></CreateBookingModal>
+        </div>
+
+        <div>
+          <Filters></Filters>
         </div>
         <div className="rounded-lg border overflow-x-auto">
           <Table>
