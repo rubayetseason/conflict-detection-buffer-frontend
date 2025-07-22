@@ -14,25 +14,39 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDownIcon } from "lucide-react";
-import { useState } from "react";
+import { ChevronDownIcon, SortAsc, SortDesc } from "lucide-react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { format } from "date-fns";
 
-const Filters = () => {
+const Filters = ({
+  date,
+  setDate,
+  resource,
+  setResource,
+  sortOrder,
+  setSortOrder,
+}: {
+  date: Date | undefined;
+  setDate: (date: Date | undefined) => void;
+  resource: string;
+  setResource: (value: string) => void;
+  sortOrder: "asc" | "desc";
+  setSortOrder: Dispatch<SetStateAction<"asc" | "desc">>;
+}) => {
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>(undefined);
 
   return (
     <div>
       <div className="flex items-center gap-4">
-        <Select>
+        <Select value={resource} onValueChange={setResource}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select Resources" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="1">Resource 1</SelectItem>
-              <SelectItem value="2">Resource 2</SelectItem>
-              <SelectItem value="3">Resource 3</SelectItem>
+              <SelectItem value="Resource 1">Resource 1</SelectItem>
+              <SelectItem value="Resource 2">Resource 2</SelectItem>
+              <SelectItem value="Resource 3">Resource 3</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -43,7 +57,7 @@ const Filters = () => {
               id="date"
               className="w-48 justify-between font-normal"
             >
-              {date ? date.toLocaleDateString() : "Select date"}
+              {date ? format(date, "PP") : "Select date"}
               <ChevronDownIcon />
             </Button>
           </PopoverTrigger>
@@ -52,26 +66,26 @@ const Filters = () => {
               mode="single"
               selected={date}
               captionLayout="dropdown"
-              onSelect={(date) => {
-                setDate(date);
+              onSelect={(selectedDate) => {
+                setDate(selectedDate);
                 setOpen(false);
               }}
             />
           </PopoverContent>
         </Popover>
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="1">Status 1</SelectItem>
-              <SelectItem value="2">Status 2</SelectItem>
-              <SelectItem value="3">Status 3</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button>Apply</Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() =>
+            setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+          }
+        >
+          {sortOrder === "asc" ? (
+            <SortAsc className="w-4 h-4" />
+          ) : (
+            <SortDesc className="w-4 h-4" />
+          )}
+        </Button>
       </div>
     </div>
   );

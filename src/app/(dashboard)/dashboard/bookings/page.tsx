@@ -30,14 +30,31 @@ export default function BookingDashboardPage() {
   const [refetch, setRefetch] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalResults, setTotalResults] = useState<number>(0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedResource, setSelectedResource] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const getBookings = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get(
-        `/bookings?limit=${DEFAULT_PAGE_SIZE}&page=${currentPage}`
-      );
-      console.log(res?.data?.data.data);
+
+      const params: Record<string, string | number> = {
+        limit: DEFAULT_PAGE_SIZE,
+        page: currentPage,
+        sort_by: "startTime",
+        sort_order: sortOrder,
+      };
+
+      if (selectedDate) {
+        params.date = selectedDate.toISOString();
+      }
+
+      if (selectedResource) {
+        params.resource = selectedResource;
+      }
+
+      const res = await axiosInstance.get("/bookings", { params });
+
       if (res?.data?.success) {
         setTotalResults(res.data.data.meta.total);
         setBookings(res.data.data.data);
@@ -54,7 +71,7 @@ export default function BookingDashboardPage() {
   useEffect(() => {
     getBookings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refetch, currentPage]);
+  }, [refetch, currentPage, selectedDate, selectedResource, sortOrder]);
 
   return (
     <ContentLayout title="Resource Bookings">
@@ -66,7 +83,14 @@ export default function BookingDashboardPage() {
         </div>
 
         <div>
-          <Filters></Filters>
+          <Filters
+            date={selectedDate}
+            setDate={setSelectedDate}
+            resource={selectedResource}
+            setResource={setSelectedResource}
+            sortOrder={sortOrder}
+            setSortOrder={setSortOrder}
+          />
         </div>
 
         <div className="px-4 py-3 rounded border bg-yellow-100 text-yellow-700 border-yellow-400 dark:bg-yellow-900 dark:text-yellow-200 dark:border-yellow-700">
