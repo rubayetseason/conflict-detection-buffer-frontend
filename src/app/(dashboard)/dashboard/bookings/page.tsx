@@ -2,7 +2,7 @@
 
 import { IBookingType } from "@/app/types";
 import { ContentLayout } from "@/components/dashboard/content-layout";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 import {
   Table,
   TableBody,
@@ -11,6 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { DEFAULT_PAGE_SIZE } from "@/constants";
+import { calculateDuration } from "@/helpers/calculateDuration";
+import PaginationHandler from "@/helpers/PaginationHandler";
 import axiosInstance from "@/utils/axios";
 import { AxiosError } from "axios";
 import { format } from "date-fns";
@@ -20,9 +23,6 @@ import { toast } from "sonner";
 import CreateBookingModal from "./_components/CreateBookingModal";
 import { DeleteBooking } from "./_components/DeleteBookingModal";
 import Filters from "./_components/Filters";
-import PaginationHandler from "@/helpers/PaginationHandler";
-import { DEFAULT_PAGE_SIZE } from "@/constants";
-import { calculateDuration } from "@/helpers/calculateDuration";
 
 export default function BookingDashboardPage() {
   const [loading, setLoading] = useState(false);
@@ -69,10 +69,10 @@ export default function BookingDashboardPage() {
           <Filters></Filters>
         </div>
 
-        <div className="px-4 py-3 text-yellow-700 bg-yellow-100 border border-red-400 rounded">
+        <div className="px-4 py-3 rounded border bg-yellow-100 text-yellow-700 border-yellow-400 dark:bg-yellow-900 dark:text-yellow-200 dark:border-yellow-700">
           <h1>
-            Same resource you cannot book during conflicting periods. Try
-            booking different available resources at that time.
+            Same resource cannot be booked during conflicting periods. Try
+            booking a different available resource at that time.
           </h1>
         </div>
 
@@ -117,7 +117,10 @@ export default function BookingDashboardPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">pending</Badge>
+                        <StatusBadge
+                          startTime={booking.startTime}
+                          endTime={booking.endTime}
+                        />
                       </TableCell>
                       <TableCell className="text-right space-x-2">
                         <DeleteBooking
