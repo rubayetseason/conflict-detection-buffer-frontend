@@ -3,7 +3,6 @@
 import { IBookingType } from "@/app/types";
 import { ContentLayout } from "@/components/dashboard/content-layout";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -21,18 +20,25 @@ import { toast } from "sonner";
 import CreateBookingModal from "./_components/CreateBookingModal";
 import { DeleteBooking } from "./_components/DeleteBookingModal";
 import Filters from "./_components/Filters";
+import PaginationHandler from "@/helpers/PaginationHandler";
+import { DEFAULT_PAGE_SIZE } from "@/constants";
 
 export default function BookingDashboardPage() {
   const [loading, setLoading] = useState(false);
   const [bookings, setBookings] = useState<IBookingType[]>([]);
   const [refetch, setRefetch] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalResults, setTotalResults] = useState<number>(0);
 
   const getBookings = async () => {
     try {
       setLoading(true);
-      const res = await axiosInstance.get("/bookings");
+      const res = await axiosInstance.get(
+        `/bookings?limit=${DEFAULT_PAGE_SIZE}&page=${currentPage}`
+      );
       console.log(res?.data?.data.data);
       if (res?.data?.success) {
+        setTotalResults(res.data.data.meta.total);
         setBookings(res.data.data.data);
       }
     } catch (error) {
@@ -46,7 +52,7 @@ export default function BookingDashboardPage() {
 
   useEffect(() => {
     getBookings();
-  }, [refetch]);
+  }, [refetch, currentPage]);
 
   return (
     <ContentLayout title="Resource Bookings">
@@ -65,73 +71,72 @@ export default function BookingDashboardPage() {
             <Loader2 className="size-8 animate-spin" />
           </div>
         ) : bookings?.length > 0 ? (
-          <div className="rounded-lg border overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Resource</TableHead>
-                  <TableHead>Requested By</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Start</TableHead>
-                  <TableHead>End</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {bookings.map((booking) => (
-                  <TableRow key={booking.id}>
-                    <TableCell>{booking.resource}</TableCell>
-                    <TableCell>{booking.requestedBy}</TableCell>
-                    <TableCell>
-                      {format(new Date(booking.startTime), "PPP")}
-                    </TableCell>
-                    <TableCell>
-                      {format(new Date(booking.startTime), "p")}
-                    </TableCell>
-                    <TableCell>
-                      {format(new Date(booking.endTime), "p")}
-                    </TableCell>
-                    <TableCell>
-                      {/* Duration in minutes */}
-                      {Math.round(
-                        (new Date(booking.endTime).getTime() -
-                          new Date(booking.startTime).getTime()) /
-                          60000
-                      )}{" "}
-                      min
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">pending</Badge>
-                    </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <DeleteBooking
-                        bookingId={booking.id}
-                        setRefetch={setRefetch}
-                        setLoading={setLoading}
-                      ></DeleteBooking>
-                    </TableCell>
+          <div className="">
+            <div className="rounded-lg border overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Resource</TableHead>
+                    <TableHead>Requested By</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Start</TableHead>
+                    <TableHead>End</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {bookings.map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell>{booking.resource}</TableCell>
+                      <TableCell>{booking.requestedBy}</TableCell>
+                      <TableCell>
+                        {format(new Date(booking.startTime), "PPP")}
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(booking.startTime), "p")}
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(booking.endTime), "p")}
+                      </TableCell>
+                      <TableCell>
+                        {/* Duration in minutes */}
+                        {Math.round(
+                          (new Date(booking.endTime).getTime() -
+                            new Date(booking.startTime).getTime()) /
+                            60000
+                        )}{" "}
+                        min
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">pending</Badge>
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <DeleteBooking
+                          bookingId={booking.id}
+                          setRefetch={setRefetch}
+                          setLoading={setLoading}
+                        ></DeleteBooking>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="mt-5">
+              <PaginationHandler
+                totalResults={totalResults}
+                currentPage={currentPage}
+                setPageNumber={setCurrentPage}
+              />
+            </div>
           </div>
         ) : (
           <div className="py-12 flex justify-center items-center">
             <h1 className="text-2xl font-bold">No Bookings Found</h1>
           </div>
         )}
-
-        {/* Pagination */}
-        <div className="flex justify-end items-center gap-4">
-          <Button variant="outline" size="sm">
-            Previous
-          </Button>
-          <Button variant="outline" size="sm">
-            Next
-          </Button>
-        </div>
       </div>
     </ContentLayout>
   );
