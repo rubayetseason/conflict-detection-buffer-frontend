@@ -1,17 +1,8 @@
 "use client";
 
-import { Pencil, Plus, Trash } from "lucide-react";
-import { useState } from "react";
-import { format } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+import { ContentLayout } from "@/components/dashboard/content-layout";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -20,8 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ContentLayout } from "@/components/dashboard/content-layout";
+import { format } from "date-fns";
+import { Pencil, Plus, Trash } from "lucide-react";
 
 const mockBookings = [
   {
@@ -43,14 +34,9 @@ const mockBookings = [
 ];
 
 export default function BookingDashboardPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
-  );
-  const [resourceFilter, setResourceFilter] = useState<string>("");
-
   return (
     <ContentLayout title="Resource Bookings">
-      <div className="p-4 md:p-8 space-y-6">
+      <div className="p-4 md:p-8 space-y-6 font-poppins">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
           <h1 className="text-2xl font-bold">Bookings</h1>
@@ -59,33 +45,6 @@ export default function BookingDashboardPage() {
             Create Booking
           </Button>
         </div>
-
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-          <div className="w-full md:w-60">
-            <Select value={resourceFilter} onValueChange={setResourceFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by resource" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Room A">Room A</SelectItem>
-                <SelectItem value="Room B">Room B</SelectItem>
-                <SelectItem value="Room C">Room C</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="w-full md:w-60">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="rounded-md border"
-            />
-          </div>
-        </div>
-
-        {/* Table */}
         <div className="rounded-lg border overflow-x-auto">
           <Table>
             <TableHeader>
@@ -94,6 +53,7 @@ export default function BookingDashboardPage() {
                 <TableHead>Requested By</TableHead>
                 <TableHead>Start</TableHead>
                 <TableHead>End</TableHead>
+                <TableHead>Duration</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -109,6 +69,7 @@ export default function BookingDashboardPage() {
                   <TableCell>
                     {format(new Date(booking.endTime), "p")}
                   </TableCell>
+                  <TableCell>difference will come here</TableCell>
                   <TableCell>
                     <Badge variant="outline">{booking.status}</Badge>
                   </TableCell>
