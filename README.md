@@ -22,6 +22,7 @@ This is a full-stack application that allows users to book time slots for shared
 ## 🔗 Live Links
 
 - **Frontend GitHub Repo:** [conflict-detection-buffer-frontend](https://github.com/rubayetseason/conflict-detection-buffer-frontend.git)
+- **Frontend Hosted Site:** [`https://conflict-detection-buffer-frontend.vercel.app/`](https://conflict-detection-buffer-frontend.vercel.app/)
 - **Backend API Endpoint:** [`https://conflict-detection-buffer-backend.vercel.app/api/v1/`](https://conflict-detection-buffer-backend.vercel.app/api/v1/)
 
 ---
