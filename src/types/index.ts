@@ -1,3 +1,12 @@
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+}
+
 export interface IBookingType {
   id: string;
   resource: string;

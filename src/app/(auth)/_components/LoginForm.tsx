@@ -7,11 +7,9 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { JWT_TOKEN_PASS } from "@/constants";
 import { LoginFormData, loginSchema } from "@/schemas/authSchema";
-import axiosInstance from "@/utils/axios";
+import authService from "@/services/authService";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AxiosError } from "axios";
 import { Eye, EyeOff, Key, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -31,24 +29,19 @@ export default function LoginForm() {
     console.log("Login submitted:", data);
 
     try {
-      const res = await axiosInstance.post("/auth/login", {
+      const { success } = await authService.login({
         email: data.email,
         password: data.password,
       });
-
-      if (res?.data?.success) {
-        const { accessToken } = res.data.data;
-
-        // Store tokens
-        localStorage.setItem(JWT_TOKEN_PASS, accessToken);
-
+      if (success) {
         toast.success("Login successful!");
         router.push("/dashboard/bookings");
       }
     } catch (error) {
-      if (error instanceof AxiosError)
-        return toast.error(error.response?.data.message);
-      toast.error("An error occurred");
+      if (error instanceof Error) {
+        return toast.error(error.message);
+      }
+      toast.error("An unexpected error occurred");
     }
   }
 
