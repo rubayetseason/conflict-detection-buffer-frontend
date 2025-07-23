@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Resource Booking System with Conflict Detection and Buffer Logic
 
-## Getting Started
+This is a full-stack application that allows users to book time slots for shared resources like rooms or devices. It includes smart conflict detection and buffer time logic to prevent overlapping or too-close bookings.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+- 🔒 Conflict detection with 10-minute buffer before and after each booking
+- 📆 Booking form with resource, start/end time, requester fields
+- ✅ Validations: minimum 15 minutes duration, End Time > Start Time
+- 📋 Dashboard listing bookings with filters (resource, date)
+- ⏰ Status tags: Upcoming, Ongoing, Past
+- 📅 Weekly calendar view (ShadCN based)
+- ❌ Cancel/Delete bookings
+- 🔍 Check available time slots via API
+- 💾 Persistent storage using Prisma (backend)
+- 🌐 Backend hosted on Vercel
+
+---
+
+## 🔗 Live Links
+
+- **Frontend GitHub Repo:** [conflict-detection-buffer-frontend](https://github.com/rubayetseason/conflict-detection-buffer-frontend.git)
+- **Backend API Endpoint:** [`https://conflict-detection-buffer-backend.vercel.app/api/v1/`](https://conflict-detection-buffer-backend.vercel.app/api/v1/)
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js 15 (App Router), Tailwind CSS, TypeScript
+- **Backend:** Express.js (TypeScript)
+- **Database:** Prisma ORM
+- **UI Components:** ShadCN UI
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the frontend repo
+
+```bash
+git clone https://github.com/rubayetseason/conflict-detection-buffer-frontend.git
+cd conflict-detection-buffer-frontend
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Run the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. Open in browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Visit `http://localhost:3000` to see the app running.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 📤 API Endpoints (Backend)
 
-To learn more about Next.js, take a look at the following resources:
+### `POST /api/v1/bookings`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Creates a booking after validating:
+- Minimum duration: 15 mins
+- No conflict or overlap (including buffer)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### `GET /api/v1/bookings`
 
-## Deploy on Vercel
+Returns all bookings. Supports optional query params:
+- `resource`: filter by resource
+- `date`: filter by date
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### `GET /api/v1/available-slots` (Bonus)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Returns available slots for a resource within a time range, factoring in buffer rules.
+
+---
+
+## 📌 Conflict Rule Example (10-minute buffer)
+
+If Resource A is booked from 2:00 PM to 3:00 PM, then:
+
+- 1:50 PM – 3:10 PM is blocked.
+- Any new booking overlapping this range will be **rejected**.
