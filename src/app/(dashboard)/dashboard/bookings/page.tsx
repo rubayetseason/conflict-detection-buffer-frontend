@@ -30,7 +30,10 @@ export default function BookingDashboardPage() {
   const [refetch, setRefetch] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalResults, setTotalResults] = useState<number>(0);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedDateRange, setSelectedDateRange] = useState<{
+    start: string;
+    end: string;
+  }>();
   const [selectedResource, setSelectedResource] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
@@ -42,8 +45,8 @@ export default function BookingDashboardPage() {
         page: currentPage,
         limit: DEFAULT_PAGE_SIZE,
         sortOrder,
-        selectedDate,
         selectedResource,
+        selectedDateRange,
       });
 
       if (res?.success) {
@@ -62,7 +65,7 @@ export default function BookingDashboardPage() {
   useEffect(() => {
     getBookings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refetch, currentPage, selectedDate, selectedResource, sortOrder]);
+  }, [refetch, currentPage, selectedDateRange, selectedResource, sortOrder]);
 
   return (
     <ContentLayout title="Resource Bookings">
@@ -75,12 +78,13 @@ export default function BookingDashboardPage() {
 
         <div>
           <Filters
-            date={selectedDate}
-            setDate={setSelectedDate}
+            dateRange={selectedDateRange}
+            setDateRange={setSelectedDateRange}
             resource={selectedResource}
             setResource={setSelectedResource}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
+            setCurrentPage={setCurrentPage}
           />
         </div>
 

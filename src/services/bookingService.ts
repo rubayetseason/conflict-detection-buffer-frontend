@@ -36,7 +36,7 @@ const getPaginatedBookings = async ({
   page,
   limit,
   sortOrder,
-  selectedDate,
+  selectedDateRange,
   selectedResource,
 }: GetPaginatedParams) => {
   const params: Record<string, string | number> = {
@@ -46,8 +46,14 @@ const getPaginatedBookings = async ({
     sort_order: sortOrder,
   };
 
-  if (selectedDate) params.date = selectedDate.toISOString();
-  if (selectedResource) params.resource = selectedResource;
+  if (selectedDateRange) {
+    params.startDate = selectedDateRange.start;
+    params.endDate = selectedDateRange.end;
+  }
+
+  if (selectedResource) {
+    params.resource = selectedResource;
+  }
 
   const res = await axiosInstance.get("/bookings", { params });
   return res.data;

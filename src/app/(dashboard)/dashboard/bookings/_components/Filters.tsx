@@ -1,4 +1,11 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -7,33 +14,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { format } from "date-fns";
 import { ChevronDownIcon, SortAsc, SortDesc } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { format } from "date-fns";
 
 const Filters = ({
-  date,
-  setDate,
+  dateRange,
+  setDateRange,
   resource,
   setResource,
   sortOrder,
   setSortOrder,
+  setCurrentPage,
 }: {
-  date: Date | undefined;
-  setDate: (date: Date | undefined) => void;
+  dateRange: { start: string; end: string } | undefined;
+  setDateRange: (range: { start: string; end: string } | undefined) => void;
   resource: string;
   setResource: (value: string) => void;
   sortOrder: "asc" | "desc";
   setSortOrder: Dispatch<SetStateAction<"asc" | "desc">>;
+  setCurrentPage: Dispatch<SetStateAction<number>>;
 }) => {
   const [open, setOpen] = useState(false);
+
+  const displayDate = dateRange
+    ? format(new Date(dateRange.start), "PP")
+    : "Select date";
 
   return (
     <div>
@@ -54,25 +60,37 @@ const Filters = ({
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              id="date"
               className="w-48 justify-between font-normal"
             >
-              {date ? format(date, "PP") : "Select date"}
+              {displayDate}
               <ChevronDownIcon />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
-              selected={date}
+              selected={dateRange ? new Date(dateRange.start) : undefined}
               captionLayout="dropdown"
               onSelect={(selectedDate) => {
-                setDate(selectedDate);
-                setOpen(false);
+                if (selectedDate) {
+                  const start = new Date(selectedDate);
+                  start.setHours(0, 0, 0, 0);
+                  const end = new Date(selectedDate);
+                  end.setHours(23, 59, 59, 999);
+
+                  setDateRange({
+                    start: start.toISOString(),
+                    end: end.toISOString(),
+                  });
+
+                  setOpen(false);
+                  setCurrentPage(1);
+                }
               }}
             />
           </PopoverContent>
         </Popover>
+
         <Button
           variant="outline"
           size="icon"

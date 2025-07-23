@@ -35,6 +35,6 @@ export interface GetPaginatedParams {
   page: number;
   limit: number;
   sortOrder: "asc" | "desc";
-  selectedDate?: Date;
+  selectedDateRange?: { start: string; end: string };
   selectedResource?: string;
 }
