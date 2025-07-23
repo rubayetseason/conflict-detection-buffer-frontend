@@ -1,6 +1,5 @@
 "use client";
 
-import { TimePicker12Demo } from "@/components/ui/time-picker-12h-demo";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -33,11 +32,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { JWT_TOKEN_PASS } from "@/constants";
+import { TimePicker12Demo } from "@/components/ui/time-picker-12h-demo";
 import { cn } from "@/lib/utils";
 import { BookingFormSchema, bookingSchema } from "@/schemas/bookingSchema";
-import axiosInstance from "@/utils/axios";
-import { jwtDecode } from "@/utils/jwtDecode";
+import bookingService from "@/services/bookingService";
+import { getUserFromToken } from "@/utils/authUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { format } from "date-fns";
@@ -53,6 +52,9 @@ export default function CreateBookingModal({
 }) {
   const [open, setOpen] = useState(false);
 
+  const now = new Date();
+  const nextHour = new Date(now.setHours(now.getHours() + 1, 0, 0, 0));
+
   const form = useForm<BookingFormSchema>({
     resolver: zodResolver(bookingSchema),
     defaultValues: {
@@ -60,12 +62,11 @@ export default function CreateBookingModal({
       requestedBy: "",
       date: new Date(),
       from: new Date(),
-      to: new Date(),
+      to: nextHour,
     },
   });
 
-  const token = localStorage.getItem(JWT_TOKEN_PASS);
-  const user = token ? jwtDecode(token) : null;
+  const user = getUserFromToken();
 
   // Add these at the top inside your component
   const [checking, setChecking] = useState(false);
@@ -84,10 +85,7 @@ export default function CreateBookingModal({
 
     const mergeDateAndTime = (date: Date, time: Date): Date => {
       const merged = new Date(date);
-      merged.setHours(time.getHours());
-      merged.setMinutes(time.getMinutes());
-      merged.setSeconds(0);
-      merged.setMilliseconds(0);
+      merged.setHours(time.getHours(), time.getMinutes(), 0, 0);
       return merged;
     };
 
@@ -96,15 +94,14 @@ export default function CreateBookingModal({
 
     try {
       setChecking(true);
-      const res = await axiosInstance.get("/bookings/available-slots", {
-        params: {
-          resource: selectedResource,
-          startTime: startTime.toISOString(),
-          endTime: endTime.toISOString(),
-        },
+
+      const result = await bookingService.checkAvailability({
+        resource: selectedResource,
+        startTime: startTime.toISOString(),
+        endTime: endTime.toISOString(),
       });
 
-      if (res.data.available) {
+      if (result.available) {
         toast.success("Slot is available!");
       } else {
         toast.error("Slot is not available.");
@@ -117,30 +114,28 @@ export default function CreateBookingModal({
       setChecking(false);
     }
   };
+
   const onSubmit = async (values: BookingFormSchema) => {
     const mergeDateAndTime = (date: Date, time: Date): Date => {
       const merged = new Date(date);
-      merged.setHours(time.getHours());
-      merged.setMinutes(time.getMinutes());
-      merged.setSeconds(0);
-      merged.setMilliseconds(0);
+      merged.setHours(time.getHours(), time.getMinutes(), 0, 0);
       return merged;
     };
 
-    const startDateTime = mergeDateAndTime(values.date, values.from);
-    const endDateTime = mergeDateAndTime(values.date, values.to);
+    const startTime = mergeDateAndTime(values.date, values.from);
+    const endTime = mergeDateAndTime(values.date, values.to);
 
     const payload = {
       resource: values.resource,
       requestedBy: values.requestedBy,
-      startTime: startDateTime.toISOString(),
-      endTime: endDateTime.toISOString(),
-      userId: user?.id,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      userId: user?.id ?? "",
     };
 
     try {
-      const res = await axiosInstance.post("/bookings", payload);
-      if (res?.data?.success) {
+      const res = await bookingService.createBooking(payload);
+      if (res?.success) {
         setOpen(false);
         setRefetch((prev) => !prev);
         toast.success("Booking created successfully!");

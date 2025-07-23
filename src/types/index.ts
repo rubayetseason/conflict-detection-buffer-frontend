@@ -7,3 +7,25 @@ export interface IBookingType {
   createdAt: string;
   userId: string;
 }
+
+export interface CreateBookingPayload {
+  resource: string;
+  requestedBy: string;
+  startTime: string;
+  endTime: string;
+  userId: string;
+}
+
+export interface CheckAvailabilityParams {
+  resource: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface GetPaginatedParams {
+  page: number;
+  limit: number;
+  sortOrder: "asc" | "desc";
+  selectedDate?: Date;
+  selectedResource?: string;
+}

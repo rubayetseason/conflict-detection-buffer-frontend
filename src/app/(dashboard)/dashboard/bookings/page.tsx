@@ -14,7 +14,6 @@ import {
 import { DEFAULT_PAGE_SIZE } from "@/constants";
 import { calculateDuration } from "@/helpers/calculateDuration";
 import PaginationHandler from "@/helpers/PaginationHandler";
-import axiosInstance from "@/utils/axios";
 import { AxiosError } from "axios";
 import { format } from "date-fns";
 import { Loader2 } from "lucide-react";
@@ -23,6 +22,7 @@ import { toast } from "sonner";
 import CreateBookingModal from "./_components/CreateBookingModal";
 import { DeleteBooking } from "./_components/DeleteBookingModal";
 import Filters from "./_components/Filters";
+import bookingService from "@/services/bookingService";
 
 export default function BookingDashboardPage() {
   const [loading, setLoading] = useState(false);
@@ -38,26 +38,17 @@ export default function BookingDashboardPage() {
     try {
       setLoading(true);
 
-      const params: Record<string, string | number> = {
-        limit: DEFAULT_PAGE_SIZE,
+      const res = await bookingService.getPaginatedBookings({
         page: currentPage,
-        sort_by: "startTime",
-        sort_order: sortOrder,
-      };
+        limit: DEFAULT_PAGE_SIZE,
+        sortOrder,
+        selectedDate,
+        selectedResource,
+      });
 
-      if (selectedDate) {
-        params.date = selectedDate.toISOString();
-      }
-
-      if (selectedResource) {
-        params.resource = selectedResource;
-      }
-
-      const res = await axiosInstance.get("/bookings", { params });
-
-      if (res?.data?.success) {
-        setTotalResults(res.data.data.meta.total);
-        setBookings(res.data.data.data);
+      if (res?.success) {
+        setTotalResults(res.data.meta.total);
+        setBookings(res.data.data);
       }
     } catch (error) {
       if (error instanceof AxiosError)

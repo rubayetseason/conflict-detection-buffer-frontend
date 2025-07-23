@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import axiosInstance from "@/utils/axios";
+import bookingService from "@/services/bookingService";
 import { AxiosError } from "axios";
 import { Trash } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -26,8 +26,8 @@ export function DeleteBooking({
 
   const deleteBookings = async () => {
     try {
-      const res = await axiosInstance.delete(`/bookings/${bookingId}`);
-      if (res?.data?.success) {
+      const res = await bookingService.deleteBooking(bookingId);
+      if (res?.success) {
         setRefetch((prev) => !prev);
       }
     } catch (error) {

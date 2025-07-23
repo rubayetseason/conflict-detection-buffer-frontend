@@ -12,11 +12,19 @@ interface TimePickerDemoProps {
 }
 
 export function TimePicker12Demo({ date, setDate }: TimePickerDemoProps) {
-  const [period, setPeriod] = React.useState<Period>("PM");
+  const [period, setPeriod] = React.useState<Period>(() =>
+    date?.getHours() && date.getHours() >= 12 ? "PM" : "AM"
+  );
 
   const minuteRef = React.useRef<HTMLInputElement>(null);
   const hourRef = React.useRef<HTMLInputElement>(null);
   const periodRef = React.useRef<HTMLButtonElement>(null);
+
+  React.useEffect(() => {
+    if (date) {
+      setPeriod(date.getHours() >= 12 ? "PM" : "AM");
+    }
+  }, [date]);
 
   return (
     <div className="flex items-end gap-2">

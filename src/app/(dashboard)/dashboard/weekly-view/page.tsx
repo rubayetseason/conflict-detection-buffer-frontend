@@ -1,6 +1,5 @@
 "use client";
 
-import { IBookingType } from "@/types";
 import { ContentLayout } from "@/components/dashboard/content-layout";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -9,7 +8,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import axiosInstance from "@/utils/axios";
+import bookingService from "@/services/bookingService";
+import { IBookingType } from "@/types";
 import { addDays, format, startOfDay } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -27,30 +27,29 @@ const WeeklyViewPage = () => {
     addDays(startOfDay(date), i)
   );
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        setLoading(true);
-        const res = await axiosInstance.get("/bookings/weekly-booking", {
-          params: { date: date.toISOString() },
-        });
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      const res = await bookingService.getWeeklyBookings(date);
 
-        if (res?.data?.success) {
-          const transformed = res.data.data.map((b: IBookingType) => ({
-            ...b,
-            startTime: new Date(b.startTime),
-            endTime: new Date(b.endTime),
-          }));
-          setBookings(transformed);
-        }
-      } catch (error) {
-        console.error("Error fetching bookings", error);
-      } finally {
-        setLoading(false);
+      if (res?.success) {
+        const transformed = res.data.map((b: IBookingType) => ({
+          ...b,
+          startTime: new Date(b.startTime),
+          endTime: new Date(b.endTime),
+        }));
+        setBookings(transformed);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching bookings", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   return (
