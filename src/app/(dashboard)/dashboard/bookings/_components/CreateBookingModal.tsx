@@ -67,6 +67,56 @@ export default function CreateBookingModal({
   const token = localStorage.getItem(JWT_TOKEN_PASS);
   const user = token ? jwtDecode(token) : null;
 
+  // Add these at the top inside your component
+  const [checking, setChecking] = useState(false);
+
+  // Watch field values
+  const selectedResource = form.watch("resource");
+  const selectedDate = form.watch("date");
+  const selectedFrom = form.watch("from");
+  const selectedTo = form.watch("to");
+
+  const isCheckDisabled =
+    !selectedResource || !selectedDate || !selectedFrom || !selectedTo;
+
+  const checkAvailability = async () => {
+    if (isCheckDisabled) return;
+
+    const mergeDateAndTime = (date: Date, time: Date): Date => {
+      const merged = new Date(date);
+      merged.setHours(time.getHours());
+      merged.setMinutes(time.getMinutes());
+      merged.setSeconds(0);
+      merged.setMilliseconds(0);
+      return merged;
+    };
+
+    const startTime = mergeDateAndTime(selectedDate, selectedFrom);
+    const endTime = mergeDateAndTime(selectedDate, selectedTo);
+
+    try {
+      setChecking(true);
+      const res = await axiosInstance.get("/bookings/available-slots", {
+        params: {
+          resource: selectedResource,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+        },
+      });
+
+      if (res.data.available) {
+        toast.success("Slot is available!");
+      } else {
+        toast.error("Slot is not available.");
+      }
+    } catch (error) {
+      if (error instanceof AxiosError)
+        return toast.error(error.response?.data.message);
+      toast.error("An error occurred");
+    } finally {
+      setChecking(false);
+    }
+  };
   const onSubmit = async (values: BookingFormSchema) => {
     const mergeDateAndTime = (date: Date, time: Date): Date => {
       const merged = new Date(date);
@@ -229,6 +279,16 @@ export default function CreateBookingModal({
                 </FormItem>
               )}
             />
+
+            <Button
+              type="button"
+              disabled={isCheckDisabled || checking}
+              onClick={checkAvailability}
+              variant="outline"
+            >
+              {checking ? "Checking..." : "Check Availability"}
+            </Button>
+
             <DialogFooter>
               <Button type="submit">Submit</Button>
             </DialogFooter>
