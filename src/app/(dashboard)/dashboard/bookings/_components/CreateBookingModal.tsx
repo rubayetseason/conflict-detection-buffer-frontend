@@ -156,7 +156,7 @@ export default function CreateBookingModal({
           Create Booking
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-sm md:max-w-lg">
         <DialogHeader>
           <DialogTitle>Create a Booking</DialogTitle>
           <DialogDescription>

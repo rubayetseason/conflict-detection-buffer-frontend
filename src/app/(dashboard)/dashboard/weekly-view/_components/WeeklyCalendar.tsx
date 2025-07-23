@@ -23,82 +23,84 @@ const WeeklyCalendar = ({
           <Loader2 className="size-9 animate-spin" />
         </div>
       ) : (
-        <div className="grid grid-cols-[80px_repeat(7,minmax(0,1fr))] border rounded overflow-x-auto text-sm">
-          {/* Header Row */}
-          <div className="bg-muted text-muted-foreground p-2 font-semibold border-r border-b">
-            Time
-          </div>
-          {weekDates.map((d, i) => (
-            <div
-              key={i}
-              className="bg-muted text-muted-foreground p-2 text-center font-semibold border-b"
-            >
-              {format(d, "EEE, MMM d")}
+        <div className="w-full overflow-x-auto">
+          <div className="min-w-[900px] grid grid-cols-[80px_repeat(7,minmax(0,1fr))] border rounded text-sm">
+            {/* Header Row */}
+            <div className="bg-muted text-muted-foreground p-2 font-semibold border-r border-b">
+              Time
             </div>
-          ))}
-
-          {/* Grid Rows */}
-          {hours.map((hourLabel, hourIdx) => (
-            <React.Fragment key={hourIdx}>
-              {/* Time label */}
+            {weekDates.map((d, i) => (
               <div
-                key={`time-${hourIdx}`}
-                className="border-r border-b p-2 text-right text-xs text-muted-foreground"
+                key={i}
+                className="bg-muted text-muted-foreground p-2 text-center font-semibold border-b"
               >
-                {hourLabel}
+                {format(d, "EEE, MMM d")}
               </div>
+            ))}
 
-              {weekDates.map((dateCell, colIdx) => {
-                const slotTime = addHours(startOfDay(dateCell), hourIdx);
+            {/* Grid Rows */}
+            {hours.map((hourLabel, hourIdx) => (
+              <React.Fragment key={hourIdx}>
+                <div
+                  key={`time-${hourIdx}`}
+                  className="border-r border-b p-2 text-right text-xs text-muted-foreground"
+                >
+                  {hourLabel}
+                </div>
 
-                return (
-                  <div
-                    key={`cell-${hourIdx}-${colIdx}`}
-                    className="relative h-20 border-b border-r cursor-pointer"
-                  >
-                    {bookings
-                      .filter((b) => {
-                        const start = new Date(b.startTime);
-                        return (
-                          start >= slotTime &&
-                          start < addHours(slotTime, 1) &&
-                          format(start, "yyyy-MM-dd") ===
-                            format(dateCell, "yyyy-MM-dd")
-                        );
-                      })
-                      .map((booking) => {
-                        const start = new Date(booking.startTime);
-                        const end = new Date(booking.endTime);
-                        const durationMinutes =
-                          (end.getTime() - start.getTime()) / (1000 * 60);
-                        const minutesFromHourStart = start.getMinutes();
+                {weekDates.map((dateCell, colIdx) => {
+                  const slotTime = addHours(startOfDay(dateCell), hourIdx);
 
-                        return (
-                          <div
-                            key={booking.id}
-                            className={cn(
-                              "absolute left-1 right-1 text-white rounded-md px-2 py-1 text-xs shadow-md overflow-hidden",
-                              resourceColors[booking.resource] || "bg-gray-500"
-                            )}
-                            style={{
-                              top: `${(minutesFromHourStart / 60) * 100}%`,
-                              height: `${(durationMinutes / 60) * 100}%`,
-                            }}
-                          >
-                            <p className="text-sm font-semibold">
-                              {booking.resource}
-                            </p>
-                            <p className="text-[10px]">
-                              {format(start, "p")} - {format(end, "p")}
-                            </p>
-                          </div>
-                        );
-                      })}
-                  </div>
-                );
-              })}
-            </React.Fragment>
-          ))}
+                  return (
+                    <div
+                      key={`cell-${hourIdx}-${colIdx}`}
+                      className="relative h-20 border-b border-r cursor-pointer"
+                    >
+                      {bookings
+                        .filter((b) => {
+                          const start = new Date(b.startTime);
+                          return (
+                            start >= slotTime &&
+                            start < addHours(slotTime, 1) &&
+                            format(start, "yyyy-MM-dd") ===
+                              format(dateCell, "yyyy-MM-dd")
+                          );
+                        })
+                        .map((booking) => {
+                          const start = new Date(booking.startTime);
+                          const end = new Date(booking.endTime);
+                          const durationMinutes =
+                            (end.getTime() - start.getTime()) / (1000 * 60);
+                          const minutesFromHourStart = start.getMinutes();
+
+                          return (
+                            <div
+                              key={booking.id}
+                              className={cn(
+                                "absolute left-1 right-1 text-white rounded-md px-2 py-1 text-xs shadow-md overflow-hidden",
+                                resourceColors[booking.resource] ||
+                                  "bg-gray-500"
+                              )}
+                              style={{
+                                top: `${(minutesFromHourStart / 60) * 100}%`,
+                                height: `${(durationMinutes / 60) * 100}%`,
+                              }}
+                            >
+                              <p className="text-sm font-semibold">
+                                {booking.resource}
+                              </p>
+                              <p className="text-[10px]">
+                                {format(start, "p")} - {format(end, "p")}
+                              </p>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       )}
     </div>
